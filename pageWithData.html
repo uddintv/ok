@@ -1,0 +1,433 @@
+
+<meta name="referrer" content="no-referrer">
+
+<div id="livePlayer">
+  <video id="liveVideo" autoplay muted playsinline></video>
+  <div id="liveButtons"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
+<style>
+html,body {
+  margin:0!important;
+  padding:0!important;
+  width:100%;
+  height:100%;
+  background:#000!important;
+  overflow:hidden!important;
+}
+
+#livePlayer {
+  position:fixed;
+  inset:0;
+  width:100%;
+  height:100%;
+  height:100dvh;
+  background:#000;
+  overflow:hidden;
+  z-index:999999;
+}
+
+#liveVideo {
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  background:#000;
+}
+
+#liveButtons {
+  position:absolute;
+  bottom:0;
+  left:0;
+  width:100%;
+  display:flex;
+  flex-direction:row;
+  flex-wrap:nowrap;
+  gap:5px;
+  padding:5px;
+  box-sizing:border-box;
+  overflow-x:auto;
+  overflow-y:hidden;
+  white-space:nowrap;
+  z-index:9999999;
+  scrollbar-width:none;
+  -webkit-overflow-scrolling:touch;
+}
+
+#liveButtons::-webkit-scrollbar {
+  display:none;
+}
+
+.live-btn {
+  flex:0 0 auto;
+  border:1px solid #16a34a;
+  background:#22c55e;
+  color:#000;
+  border-radius:5px;
+  padding:7px 12px;
+  font-size:13px;
+  font-weight:bold;
+  cursor:pointer;
+  white-space:nowrap;
+}
+
+.live-btn.active {
+  background:#000;
+  color:#ffff00;
+  border:1px solid #ffff00;
+}
+
+#liveButtons:empty {
+  display:none;
+}
+</style>
+
+<script>
+(function(){
+
+"use strict";
+
+const channels = [
+  {url:"https://live2.jorvakstreamcache.com/live/channel1.m3u8"},
+  {url:"https://live2.jorvakstreamcache.com/live/channel2.m3u8"},
+  {url:"https://live2.jorvakstreamcache.com/live/channel3.m3u8"},
+  {url:"https://live2.jorvakstreamcache.com/live/channel4.m3u8"},
+  {url:"https://live2.jorvakstreamcache.com/live/channel5.m3u8"},
+  {url:"https://live2.jorvakstreamcache.com/live/channel6.m3u8"},
+  {url:"https://live2.jorvakstreamcache.com/live/channel7.m3u8"},
+  {url:"https://live2.jorvakstreamcache.com/live/channel8.m3u8"},
+  {url:"https://live2.jorvakstreamcache.com/live/channel9.m3u8"},
+  {url:"https://live2.jorvakstreamcache.com/live/channel10.m3u8"},
+  {url:"https://live2.jorvakstreamcache.com/live/channel11.m3u8"},
+  {url:"https://live2.jorvakstreamcache.com/live/channel12.m3u8"},
+  {url:"https://live2.jorvakstreamcache.com/live/channel13.m3u8"},
+  {url:"https://live2.jorvakstreamcache.com/live/channel14.m3u8"},
+  {url:"https://live2.jorvakstreamcache.com/live/channel15.m3u8"},
+  {url:"https://live2.jorvakstreamcache.com/live/channel16.m3u8"},
+  {url:"https://live2.jorvakstreamcache.com/live/channel17.m3u8"},
+  {url:"https://live2.jorvakstreamcache.com/live/channel18.m3u8"},
+  {url:"https://live2.jorvakstreamcache.com/live/channel19.m3u8"}
+];
+
+const video = document.getElementById("liveVideo");
+const buttonsBox = document.getElementById("liveButtons");
+
+const params = new URLSearchParams(location.search);
+const serverParam = params.get("server");
+
+// server=3 means third link in this 19-link list
+const serverNumber =
+  serverParam !== null && /^\d+$/.test(serverParam)
+    ? Number(serverParam)
+    : 0;
+
+const singleMode =
+  serverNumber >= 1 && serverNumber <= channels.length;
+
+let hls = null;
+let scanning = false;
+let activeNumber = 0;
+let liveNumbers = [];
+let firstScan = true;
+
+function wait(ms){
+  return new Promise(resolve=>setTimeout(resolve,ms));
+}
+
+async function getText(url){
+
+  const controller = new AbortController();
+  const timer = setTimeout(()=>controller.abort(),10000);
+
+  try {
+    const response = await fetch(url,{
+      method:"GET",
+      mode:"cors",
+      credentials:"omit",
+      cache:"no-store",
+      signal:controller.signal
+    });
+
+    if(!response.ok) throw new Error("HTTP "+response.status);
+
+    return await response.text();
+
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+// Playlist ও Media Segment পরীক্ষা
+async function checkChannel(number){
+
+  const url = channels[number-1].url;
+
+  try {
+
+    let playlist = await getText(url);
+
+    if(!playlist.trim().startsWith("#EXTM3U"))
+      return false;
+
+    let mediaUrl = url;
+    let lines = playlist.split(/\r?\n/).map(x=>x.trim());
+
+    const masterIndex = lines.findIndex(
+      x=>x.startsWith("#EXT-X-STREAM-INF")
+    );
+
+    if(masterIndex !== -1){
+
+      const variant = lines.slice(masterIndex+1)
+        .find(x=>x && !x.startsWith("#"));
+
+      if(!variant) return false;
+
+      mediaUrl = new URL(variant,url).href;
+      playlist = await getText(mediaUrl);
+
+      if(!playlist.trim().startsWith("#EXTM3U"))
+        return false;
+
+      lines = playlist.split(/\r?\n/).map(x=>x.trim());
+    }
+
+    const segment = lines.find(
+      x=>x && !x.startsWith("#")
+    );
+
+    if(!segment) return false;
+
+    const segmentUrl = new URL(segment,mediaUrl).href;
+
+    const controller = new AbortController();
+    const timer = setTimeout(()=>controller.abort(),10000);
+
+    try {
+
+      const response = await fetch(segmentUrl,{
+        method:"GET",
+        mode:"cors",
+        credentials:"omit",
+        headers:{"Range":"bytes=0-1"},
+        cache:"no-store",
+        signal:controller.signal
+      });
+
+      return response.ok;
+
+    } finally {
+      clearTimeout(timer);
+    }
+
+  } catch(error) {
+    console.warn("Channel "+number+" check failed:",error);
+    return false;
+  }
+}
+
+// ভিডিও চালু
+function playChannel(number){
+
+  if(!channels[number-1]) return;
+
+  activeNumber = number;
+
+  video.style.display="block";
+  video.muted = true;
+
+  document.querySelectorAll(".live-btn").forEach(btn=>{
+    btn.classList.toggle(
+      "active",
+      Number(btn.dataset.number)===number
+    );
+  });
+
+  if(hls){
+    hls.destroy();
+    hls=null;
+  }
+
+  const url = channels[number-1].url;
+
+  if(Hls.isSupported()){
+
+    hls = new Hls({
+      enableWorker:true,
+      lowLatencyMode:true
+    });
+
+    hls.loadSource(url);
+    hls.attachMedia(video);
+
+    hls.on(Hls.Events.MANIFEST_PARSED,()=>{
+      video.play().catch(()=>{});
+    });
+
+  } else if(video.canPlayType("application/vnd.apple.mpegurl")){
+
+    video.src=url;
+    video.play().catch(()=>{});
+
+  }
+
+}
+
+// শুধু LIVE বাটন তৈরি
+function updateButtons(){
+
+  buttonsBox.innerHTML="";
+
+  liveNumbers.forEach(number=>{
+
+    const btn=document.createElement("button");
+
+    btn.className="live-btn";
+    btn.dataset.number=number;
+    btn.textContent=number+" LIVE";
+
+    btn.addEventListener("click",()=>{
+      playChannel(number);
+    });
+
+    buttonsBox.appendChild(btn);
+  });
+
+  if(liveNumbers.includes(activeNumber)){
+    document.querySelectorAll(".live-btn").forEach(btn=>{
+      btn.classList.toggle(
+        "active",
+        Number(btn.dataset.number)===activeNumber
+      );
+    });
+  }
+}
+
+// সম্পূর্ণ স্ক্যান
+async function scanAll(){
+
+  if(scanning) return;
+  scanning=true;
+
+  const found=[];
+
+  const targets = singleMode
+    ? [serverNumber]
+    : channels.map((_,index)=>index+1);
+
+  for(let i=0;i<targets.length;i+=3){
+
+    const batch=targets.slice(i,i+3);
+
+    const results=await Promise.all(
+      batch.map(number=>checkChannel(number))
+    );
+
+    results.forEach((isLive,index)=>{
+      if(isLive) found.push(batch[index]);
+    });
+
+  }
+
+  // নতুন LIVE তালিকা
+  liveNumbers=found;
+  updateButtons();
+publishLiveData();
+
+  if(singleMode){
+
+    // server parameter থাকলে কোনো বাটন থাকবে না
+    buttonsBox.style.display="none";
+
+    if(found.length){
+      if(firstScan || activeNumber!==serverNumber){
+        playChannel(serverNumber);
+      }
+    } else {
+      if(hls){
+        hls.destroy();
+        hls=null;
+      }
+      video.pause();
+      video.removeAttribute("src");
+      video.load();
+    }
+
+  } else {
+
+    buttonsBox.style.display=found.length?"flex":"none";
+
+    // প্রথম স্ক্যানে প্রথম LIVE চ্যানেল চালু
+    if(firstScan && found.length){
+      playChannel(found[0]);
+    }
+
+    // আগের Active চ্যানেল বন্ধ হলে নতুন প্রথম LIVE চ্যানেল চালু
+    if(!found.includes(activeNumber) && found.length){
+      playChannel(found[0]);
+    }
+
+  }
+
+  firstScan=false;
+  scanning=false;
+
+}
+
+// প্রথম স্ক্যান
+scanAll();
+
+// প্রতি ৩০ মিনিটে নতুন স্ক্যান
+setInterval(()=>{
+  scanAll();
+},30*60*1000);
+
+})();
+
+
+</script>
+
+
+
+<script>
+
+
+function publishLiveData(){
+
+  const data = {
+    updatedAt: new Date().toISOString(),
+    live: liveNumbers.map(number => ({
+      number: number,
+      name: number + " LIVE",
+      url: channels[number-1].url
+    }))
+  };
+
+  const json = JSON.stringify(data);
+
+  // অন্য স্ক্রিপ্টের জন্য তথ্য প্রকাশ
+  window.liveChannelData = json;
+
+  // Local storage-এ সংরক্ষণ
+  localStorage.setItem("liveChannelData", json);
+
+  // Text হিসেবে দেখানো
+  console.log(json);
+}
+
+
+</script>
+
+
+
+
+
+
+
+
+
+
