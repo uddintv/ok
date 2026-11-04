@@ -4,14 +4,14 @@
   
 <head>
     <meta charset="UTF-8">
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">  
 
     <title>Uddin iptv</title>
 
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>-->
+<script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.17/dist/hls.min.js"></script>
 
   
 <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.15.12/shaka-player.compiled.js"></script> -->
@@ -27,7 +27,6 @@
 
 
  <!---->  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shaka-player@4.16.2/dist/controls.css">
-<script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.17/dist/hls.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/shaka-player@4.16.2/dist/shaka-player.ui.min.js" defer></script>
 
 
@@ -47,15 +46,15 @@
         }
         
         .main-wrapper {  
-            /*width: 95%; 
-            max-width: 950px; */
+
             background: #0a0a0a; 
             border: 1px solid #222; 
             /*  border-top: 1px solid transparent  ; */
             box-shadow: 0 10px 40px rgba(0,0,0,0.9); 
             border-radius: 12px;
             overflow: hidden;
-            margin: 0 15%; /* 0 auto; ব্লগস্পটে সেন্টারের জন্য জরুরি */
+    width: 800;
+    max-width: 800px;
         }
 
         /* লোগো সেকশন */
@@ -302,7 +301,7 @@ padding:1px 15px 15px;
       }
           
 .overlay-nav.left,
-.overlay-nav.right, {
+.overlay-nav.right {
   display: none  !important;
     }
           
