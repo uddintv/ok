@@ -3,18 +3,24 @@ name: M3U8 Live Scanner
 
 on:
   schedule:
-    - cron: "*/30 * * * *"
+    - cron: "5,35 * * * *"
+
   workflow_dispatch:
 
 permissions:
   contents: write
 
+concurrency:
+  group: m3u8-live-scanner
+  cancel-in-progress: false
+
 jobs:
   scan:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
-      - name: Checkout
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
       - name: Setup Python
@@ -25,13 +31,19 @@ jobs:
       - name: Install Requests
         run: pip install requests
 
-      - name: Scan M3U8
+      - name: Run M3U8 Scanner
         run: python scanner.py
 
-      - name: Update JSON
+      - name: Update Live JSON
         run: |
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
           git add live.json
-          git diff --cached --quiet || git commit -m "Update live links"
-          git push
+
+          if ! git diff --cached --quiet; then
+            git commit -m "Auto update live M3U8 links"
+            git push
+          else
+            echo "No changes in live links"
+          fi
