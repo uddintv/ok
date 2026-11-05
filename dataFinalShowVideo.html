@@ -5,7 +5,7 @@
 <meta name="referrer" content="no-referrer">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>LIVE TV Player</title>
+<title>LIVE PLAYER</title>
 
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
@@ -32,8 +32,7 @@ html,body {
 
 #liveVideo {
   position:absolute;
-  top:0;
-  left:0;
+  inset:0;
   width:100%;
   height:100%;
   object-fit:contain;
@@ -100,232 +99,131 @@ html,body {
 
 "use strict";
 
-// GitHub RAW HTML SOURCE
-const DATA_URL =
+const SOURCE =
 "https://raw.githubusercontent.com/uddintv/ok/refs/heads/main/pageWithData.html";
 
 const video = document.getElementById("liveVideo");
 const buttonsBox = document.getElementById("liveButtons");
 
+const params = new URLSearchParams(location.search);
+const server = Number(params.get("server")) || 0;
+
 let channels = [];
 let hls = null;
-let activeNumber = 0;
-let liveNumbers = [];
-let scanning = false;
-
-// Server parameter
-const params = new URLSearchParams(location.search);
-const serverParam = params.get("server");
-
-const serverNumber =
-  serverParam !== null && /^\d+$/.test(serverParam)
-  ? Number(serverParam)
-  : 0;
-
-let singleMode = false;
 
 
-// Fetch GitHub HTML and extract channel URLs
-async function loadChannels(){
+// Fetch first page HTML
+async function loadLive(){
 
   try {
 
-    const response = await fetch(DATA_URL,{
-      method:"GET",
-      cache:"no-store"
-    });
+    const response = await fetch(
+      SOURCE + "?t=" + Date.now(),
+      {cache:"no-store"}
+    );
 
     if(!response.ok)
-      throw new Error("GitHub HTTP "+response.status);
+      throw new Error("Source fetch failed");
 
     const html = await response.text();
 
-    // Extract all m3u8 URLs from channels array
-    const matches = [
-      ...html.matchAll(
-        /url\s*:\s*["']([^"']+\.m3u8(?:\?[^"']*)?)["']/g
-      )
-    ];
-
-    const urls = [...new Set(
-      matches.map(match=>match[1])
-    )];
-
-    if(!urls.length)
-      throw new Error("No channel URLs found");
-
-    channels = urls.map(url=>({url}));
-
-    singleMode =
-      serverNumber >= 1 &&
-      serverNumber <= channels.length;
-
-    console.log("Channels loaded:",channels.length);
-
-    return true;
-
-  } catch(error) {
-
-    console.error("GitHub fetch failed:",error);
-
-    return false;
-  }
-}
-
-
-// Fetch text
-async function getText(url){
-
-  const controller = new AbortController();
-
-  const timer = setTimeout(
-    ()=>controller.abort(),
-    10000
-  );
-
-  try {
-
-    const response = await fetch(url,{
-      method:"GET",
-      mode:"cors",
-      credentials:"omit",
-      cache:"no-store",
-      signal:controller.signal
-    });
-
-    if(!response.ok)
-      throw new Error("HTTP "+response.status);
-
-    return await response.text();
-
-  } finally {
-
-    clearTimeout(timer);
-
-  }
-}
-
-
-// Check LIVE channel
-async function checkChannel(number){
-
-  const url = channels[number-1].url;
-
-  try {
-
-    let playlist = await getText(url);
-
-    if(!playlist.trim().startsWith("#EXTM3U"))
-      return false;
-
-    let mediaUrl = url;
-
-    let lines = playlist
-      .split(/\r?\n/)
-      .map(x=>x.trim());
-
-    const masterIndex = lines.findIndex(
-      x=>x.startsWith("#EXT-X-STREAM-INF")
+    const doc = new DOMParser().parseFromString(
+      html,
+      "text/html"
     );
 
-    if(masterIndex !== -1){
-
-      const variant = lines
-        .slice(masterIndex+1)
-        .find(x=>x && !x.startsWith("#"));
-
-      if(!variant) return false;
-
-      mediaUrl = new URL(variant,url).href;
-
-      playlist = await getText(mediaUrl);
-
-      if(!playlist.trim().startsWith("#EXTM3U"))
-        return false;
-
-      lines = playlist
-        .split(/\r?\n/)
-        .map(x=>x.trim());
-    }
-
-    const segment = lines.find(
-      x=>x && !x.startsWith("#")
+    // Get only existing LIVE buttons
+    const buttons = doc.querySelectorAll(
+      "#liveButtons .live-btn[data-number][data-url]"
     );
 
-    if(!segment) return false;
+    channels = Array.from(buttons).map(btn=>({
 
-    const segmentUrl = new URL(
-      segment,
-      mediaUrl
-    ).href;
+      number: Number(btn.dataset.number),
 
-    const controller = new AbortController();
+      name: btn.textContent.trim(),
 
-    const timer = setTimeout(
-      ()=>controller.abort(),
-      10000
+      url: btn.dataset.url
+
+    })).filter(item=>
+      item.number > 0 &&
+      /^https?:\/\//i.test(item.url)
     );
 
-    try {
+    // Optional server mode
+    if(server > 0){
 
-      const response = await fetch(segmentUrl,{
-        method:"GET",
-        mode:"cors",
-        credentials:"omit",
-        headers:{"Range":"bytes=0-1"},
-        cache:"no-store",
-        signal:controller.signal
-      });
-
-      return response.ok;
-
-    } finally {
-
-      clearTimeout(timer);
+      channels = channels.filter(
+        item=>item.number === server
+      );
 
     }
 
-  } catch(error) {
+    createButtons();
 
-    console.warn("Channel "+number,error);
+  } catch(error){
 
-    return false;
+    console.error("LIVE fetch error:",error);
 
   }
+
 }
 
 
-// Play channel
-function playChannel(number){
+// Create buttons
+function createButtons(){
 
-  if(!channels[number-1]) return;
+  buttonsBox.innerHTML = "";
 
-  activeNumber = number;
+  channels.forEach(channel=>{
 
-  video.style.display="block";
-  video.muted = true;
+    const btn = document.createElement("button");
+
+    btn.className = "live-btn";
+    btn.dataset.number = channel.number;
+    btn.textContent = channel.name;
+
+    btn.onclick = ()=>playChannel(channel);
+
+    buttonsBox.appendChild(btn);
+
+  });
+
+  buttonsBox.style.display =
+    channels.length ? "flex" : "none";
+
+  // Auto play first available LIVE channel
+  if(channels.length){
+
+    playChannel(channels[0]);
+
+  }
+
+}
+
+
+// Play video
+function playChannel(channel){
+
+  if(hls){
+
+    hls.destroy();
+    hls = null;
+
+  }
 
   document.querySelectorAll(".live-btn").forEach(btn=>{
 
     btn.classList.toggle(
       "active",
-      Number(btn.dataset.number)===number
+      Number(btn.dataset.number) === channel.number
     );
 
   });
 
-  if(hls){
-
-    hls.destroy();
-    hls=null;
-
-  }
-
   video.pause();
   video.removeAttribute("src");
   video.load();
-
-  const url = channels[number-1].url;
 
   if(Hls.isSupported()){
 
@@ -334,7 +232,7 @@ function playChannel(number){
       lowLatencyMode:true
     });
 
-    hls.loadSource(url);
+    hls.loadSource(channel.url);
     hls.attachMedia(video);
 
     hls.on(Hls.Events.MANIFEST_PARSED,()=>{
@@ -347,7 +245,7 @@ function playChannel(number){
     video.canPlayType("application/vnd.apple.mpegurl")
   ){
 
-    video.src=url;
+    video.src = channel.url;
     video.play().catch(()=>{});
 
   }
@@ -355,178 +253,11 @@ function playChannel(number){
 }
 
 
-// Create LIVE buttons
-function updateButtons(){
+// Load immediately
+loadLive();
 
-  buttonsBox.innerHTML="";
 
-  liveNumbers.forEach(number=>{
-
-    const btn=document.createElement("button");
-
-    btn.className="live-btn";
-    btn.dataset.number=number;
-    btn.textContent=number+" LIVE";
-
-    btn.addEventListener("click",()=>{
-
-      playChannel(number);
-
-    });
-
-    buttonsBox.appendChild(btn);
-
-  });
-
-  buttonsBox.style.display =
-    liveNumbers.length ? "flex" : "none";
-
-  if(liveNumbers.includes(activeNumber)){
-
-    document.querySelectorAll(".live-btn").forEach(btn=>{
-
-      btn.classList.toggle(
-        "active",
-        Number(btn.dataset.number)===activeNumber
-      );
-
-    });
-
-  }
-
-}
-
-
-// Scan all channels
-async function scanAll(){
-
-  if(scanning) return;
-
-  scanning=true;
-
-  const targets = singleMode
-    ? [serverNumber]
-    : channels.map((_,index)=>index+1);
-
-  const found=[];
-
-  try {
-
-    for(let i=0;i<targets.length;i+=3){
-
-      const batch=targets.slice(i,i+3);
-
-      const results=await Promise.all(
-        batch.map(number=>checkChannel(number))
-      );
-
-      results.forEach((isLive,index)=>{
-
-        if(isLive)
-          found.push(batch[index]);
-
-      });
-
-    }
-
-    liveNumbers=found;
-
-    if(singleMode){
-
-      buttonsBox.innerHTML="";
-      buttonsBox.style.display="none";
-
-      if(found.length){
-
-        if(activeNumber!==serverNumber){
-
-          playChannel(serverNumber);
-
-        }
-
-      } else {
-
-        if(hls){
-
-          hls.destroy();
-          hls=null;
-
-        }
-
-        video.pause();
-        video.removeAttribute("src");
-        video.load();
-
-      }
-
-    } else {
-
-      updateButtons();
-
-      if(!found.includes(activeNumber) && found.length){
-
-        playChannel(found[0]);
-
-      }
-
-      if(!activeNumber && found.length){
-
-        playChannel(found[0]);
-
-      }
-
-    }
-
-    console.log("LIVE Channels:",liveNumbers);
-
-  } catch(error){
-
-    console.error("Scan error:",error);
-
-  } finally {
-
-    scanning=false;
-
-  }
-
-}
-
-
-// Start player
-async function startPlayer(){
-
-  const loaded = await loadChannels();
-
-  if(!loaded){
-
-    console.error("Unable to load GitHub channel data");
-
-    return;
-
-  }
-
-  if(singleMode){
-
-    if(serverNumber<1 || serverNumber>channels.length){
-
-      console.error("Invalid server number");
-
-      return;
-
-    }
-
-  }
-
-  await scanAll();
-
-}
-
-
-// Initial start
-startPlayer();
-
-
-// Reload complete page every 35 minutes
+// Reload every 35 minutes
 setTimeout(()=>{
 
   location.reload();
