@@ -8,7 +8,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">  
 
-    <title>Uddin iptv</title>
+    <title>Live Dashi</title>
 
     <!-- <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>-->
 <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.17/dist/hls.min.js"></script>
@@ -2850,13 +2850,23 @@ opacity: 1;
   <img src="https://i.imgur.com/5CtiQ45.png" class="ch-item-logo">
   <span>Flix</span> </button>    
   
-<button class="ch-item " onclick="find('MovieClub-Hindi-tv', this)"> 
+<button class="ch-item " onclick="find('B4Umovie-Hindi-tv', this)"> 
+  <img src="https://i.imgur.com/M9kMFJl.png" class="ch-item-logo">
+  <span>B4uMovie</span> </button> 
+  
+  <button class="ch-item " onclick="find('MovieClub-Hindi-tv', this)"> 
   <img src="https://xstreamcp-assets-msp.streamready.in/assets/LIVETV/LIVECHANNEL/LIVETV_LIVETVCHANNEL_MOVIES_NOW/images/LOGO_HD/image.png" class="ch-item-logo">
   <span>MovieClub</span> </button>    
   
 <button class="ch-item " onclick="find('Mix-Eng-tv', this)"> 
   <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhv6vixxu90rtB-fUXVy1dtWU7ZQTdIi58poYl7u7owAqJY7oqEVv22UfBqJRrtwGHTvetvYAmom_8YIFFx5ZpCzvo_b6DJiDtHXFSbBqiZ9PMOfP0zxxn34BMMG1PySPp5GwEhapecRLFoEiBclIPvyfLbfdmLmQ7jdfHxvDw2m-AEGKq0o4xmpCdPZvY/s1600/Screenshot_2.png" class="ch-item-logo">
   <span>Mix Movie</span> </button>  
+  
+  
+<button class="ch-item " onclick="find('F-boll-match-time-tv', this)"> 
+  <img src="https://placehold.co/60x60/red/fff?text=MATCH%0ATIME" class="ch-item-logo">
+  <span>Match Time</span> </button> 
+  
   
 <button class="ch-item " onclick="find('All-HD-Tv', this)"> 
   <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjwUdmcSovbVL16sy7j7J7wP_xDcVWc94qwqvFWD0DF2JvrLxUdw4gwo7vborSkaAHZLWCqPQwhkQQD-K71RC-2LfvCVN6VmM1SdZAAXy2gSQdodNdHz2gO_2FW3gccOHwg-2A7Jm3PSuYL3EdMgkK8RvBLa4Nxz3rftYAdglubg193lGfiFFvp42sdV74/s1600/Screenshot_3.png" class="ch-item-logo">
@@ -3081,7 +3091,7 @@ const manualLinks = {
       serverName: "Ntv hd",
       img: "",   
       url: "https://tvsen5.aynaott.com/JHPxHAWonztVucyc4GzF/index.m3u8" //NTV
-      // url: "https://tvsen6.aynaott.com/EWDrV5QskgarZEUBb3pU/index.m3u8?e=1784102532&u=ee5437a7-c16b-4700-b317-a41b77d5cba9&token=3b9afdda2bd5332e8f49ed7dfa321a06" // Ekattor tv
+  // url: "https://tvsen6.aynaott.com/EWDrV5QskgarZEUBb3pU/index.m3u8" // Ekattor tv
     }     
   ],
 
@@ -3156,48 +3166,103 @@ const manualLinks = {
       img: "", 
       url: "https://da86m1sqpm3o0.cloudfront.net/28072023/smil:colorsme.smil/playlist.m3u8"
     }
-
   ],
   
   
 
   "Music-Hindi-tv": [
     {
+      serverName: "MusicINDIA",
       img: "",   
       url: "https://cdn.pishow.tv/ott/live/226/master.m3u8" 
-    }
+    },
+    {
+      serverName: "EPIC",
+      img: "",   
+      url: "https://cc-3cyxq80qusspd.akamaized.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-3cyxq80qusspd/playlist.m3u8" 
+    },    
+    {
+      serverName: "ZOOM",
+      img: "",   
+      url: "https://dai.google.com/linear/hls/event/JCAm25qkRXiKcK1AJMlvKQ/master.m3u8" 
+   // url: "hhttps://pubads.g.doubleclick.net/ssai/event/JCAm25qkRXiKcK1AJMlvKQ/master.m3u8" 
+    }    
+    
   ],
 
   
   
   "Flix-Hindi-tv": [
     {
+      serverName: "FlixMovie",
       img: "",   
       url: "https://cc-r5hupcym5oehh.akamaized.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-r5hupcym5oehh/SBUM/RunnTV/BollyFlix_IN/BollyFlix_IN.m3u8" 
+    },    
+    {
+      serverName: "ZeeCinema",
+      img: "",   
+      url: "https://raw.githubusercontent.com/amazeyourself/adaptive-streams/refs/heads/main/streams/sg/YuppTV/ZeeCinemaAPAC.m3u8"   
     }
   ],
 
   
   
+  "B4Umovie-Hindi-tv": [
+    {
+      serverName: "Cineplex",
+      img: "",   
+       url: "https://raw.githubusercontent.com/amazeyourself/adaptive-streams/refs/heads/main/streams/gb/YuppTV/ColorsCineplexUK.m3u8" 
+    },    
+    {
+      serverName: "B4Umovie",
+      img: "",   
+      // url: "https://sis-global.prod.samsungtv.plus/v1/tvpprd/sc-mp2ar4ca425xo.m3u8"  //MOVIEclub 1
+      url: "https://streams.tangotv.in/B4UMOVIES/ORIGIN/index.m3u8" //B4Umovie
+    }
+  ],
+  
+  
+  
   "MovieClub-Hindi-tv": [
     {
+      serverName: "MovieClub",
       img: "",   
       // url: "https://sis-global.prod.samsungtv.plus/v1/tvpprd/sc-mp2ar4ca425xo.m3u8"  //MOVIEclub
+      url: "https://d3gnyty2vddhsg.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/pb-ytipwjqub3kf8/TMC2_IN.m3u8?ads.ads_cdn=cf&ads.cdn=cf" 
+    },
+    {
+      serverName: "&Pictures",
+      img: "",   
       //url: "https://s1.itcnbd.live/Andpicture/tracks-v1a1/mono.m3u8" //&PICTURES
       url: "https://d1g8wgjurz8via.cloudfront.net/bpk-tv/Andpictures/default/manifest.mpd", //&PICTURES
       keyId: "8dea532cabfe4f71ba20f62310e7949f",
       key: "7a214a974e4f4d1d9bb66364d5f0cb92"
     }
-  ],
-
+  ],  
+  
   
   
   "Mix-Eng-tv": [
     {
+      serverName: "HD",
       img: "",   
-      url: "https://ml-pull-hwc.myco.io/MixTV/hls/index.m3u8" 
+      url: "https://ml-pull-hwc.myco.io/MixTV/hls/index.m3u8"       
     }
   ],
+  
+  "F-boll-match-time-tv": [
+    {
+      serverName: "Match-Time (No Sound) ",
+      img: "",   
+      url: "https://livedashi.blogspot.com/p/all-football-match-live.html"       
+    },
+    {
+      serverName: "F-boll tv (WITH 2 AD) ",
+      img: "",   
+      url: "https://livedashi.blogspot.com/p/embed-20-channel-btn-with-ad.html"       
+    }    
+  ],  
+  
   
   
 
@@ -3239,12 +3304,51 @@ const manualLinks = {
     { serverName: "WILLOW XTRA", img: "", url: "https://uddintv.github.io/uddinsports/adFreeUrl.html?url=https://wideiptv.top/player/WILLOWXtra" }
   ],
 
+  
+  
   "Live-tv-Only": [
     {
-      img: "",   
-      url: "https://livedashi.blogspot.com/p/all-football-match-live.html" 
-    }
+      serverName: "SPORTS 1",
+      img: "",
+      url: "https://livedashi.blogspot.com/p/xoilaczcl-dot-tv-all-live-btn-from.html?server=1" 
+    },
+    {
+      serverName: "SPORTS 2",
+      img: "",
+      url: "https://livedashi.blogspot.com/p/xoilaczcl-dot-tv-all-live-btn-from.html?server=2" 
+    }, 
+    {
+      serverName: "SPORTS 3",
+      img: "",
+      url: "https://livedashi.blogspot.com/p/xoilaczcl-dot-tv-all-live-btn-from.html?server=3" 
+    },
+    {
+      serverName: "SPORTS 4",
+      img: "",
+      url: "https://livedashi.blogspot.com/p/xoilaczcl-dot-tv-all-live-btn-from.html?server=4" 
+    },      
+    {
+      serverName: "SPORTS 5",
+      img: "",
+      url: "https://livedashi.blogspot.com/p/xoilaczcl-dot-tv-all-live-btn-from.html?server=5" 
+    },
+    {
+      serverName: "SPORTS 6",
+      img: "",
+      url: "https://livedashi.blogspot.com/p/xoilaczcl-dot-tv-all-live-btn-from.html?server=6" 
+    },     
+    {
+      serverName: "SPORTS ALL",
+      img: "",
+      url: "https://livedashi.blogspot.com/p/xoilaczcl-dot-tv-all-live-btn-from.html" 
+    },     
+        
   ],
+  
+  
+  
+  
+  
 
   "FIFA-All-Tv": [
     {
@@ -3290,20 +3394,7 @@ const manualLinks = {
       url: "https://a151aivottlinear-a.akamaihd.net/OTTB/sin-nitro/live/dash/enc/m6sqanvm2m/out/v1/f6beb46c6e9a4132ad739f3ca27df6aa/cenc.mpd",
       keyId: "1444f4235529f183f0a5a486befe9cdb",
       key: "e5e3fec67a1bb3472a2089c8a0a2557f"
-    },  
-    {
-      serverName: "SPORTS 1",
-      img: "",
-      url: "https://livedashi.blogspot.com/p/xoilaczcl-dot-tv-all-live-btn-from.html?server=1" 
-      // url: "https://pull.niues.live/live/stream-622240_lhd.m3u8"
-    },
-    {
-      serverName: "SPORTS 2",
-      img: "",
-      url: "https://livedashi.blogspot.com/p/xoilaczcl-dot-tv-all-live-btn-from.html?server=2" 
-      // url: "https://playback.livetl002.com/live/6a5b13ceb36a14387baeddaa.m3u8"
-    },   
-    
+    },    
     {
       serverName: "Fox Deportes",
       img: "", 
@@ -3505,32 +3596,7 @@ const manualLinks = {
       url: "https://livedashi.blogspot.com/p/all-m3u8-with-btn.html?server=12" 
       // url: "https://playback.livetl002.com/live/6a5b13ceb36a14387baeddaa.m3u8"
     },      
-       
-    {
-      serverName: "SPORTS 3",
-      img: "",
-      url: "https://livedashi.blogspot.com/p/xoilaczcl-dot-tv-all-live-btn-from.html?server=3" 
-      // url: "https://pull.niues.live/live/stream-622240_lhd.m3u8"
-    },
-    {
-      serverName: "SPORTS 4",
-      img: "",
-      url: "https://livedashi.blogspot.com/p/xoilaczcl-dot-tv-all-live-btn-from.html?server=4" 
-      // url: "https://playback.livetl002.com/live/6a5b13ceb36a14387baeddaa.m3u8"
-    },      
-    
-    {
-      serverName: "SPORTS 5",
-      img: "",
-      url: "https://livedashi.blogspot.com/p/xoilaczcl-dot-tv-all-live-btn-from.html?server=5" 
-      // url: "https://pull.niues.live/live/stream-622240_lhd.m3u8"
-    },
-    {
-      serverName: "SPORTS 6",
-      img: "",
-      url: "https://livedashi.blogspot.com/p/xoilaczcl-dot-tv-all-live-btn-from.html?server=6" 
-      // url: "https://playback.livetl002.com/live/6a5b13ceb36a14387baeddaa.m3u8"
-    },   
+  
     
     
   ],
