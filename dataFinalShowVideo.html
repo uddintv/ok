@@ -265,6 +265,47 @@ setTimeout(()=>{
 },35*60*1000);
 
 })();
+
+
+
+
+
+function loadLive(){
+
+  const json = localStorage.getItem("liveChannelData");
+
+  if(!json){
+    console.log("No LIVE data available");
+    return;
+  }
+
+  const data = JSON.parse(json);
+
+  const channels = data.live || [];
+
+  const buttonsBox = document.getElementById("liveButtons");
+
+  buttonsBox.innerHTML = "";
+
+  channels.forEach(channel=>{
+
+    const btn = document.createElement("button");
+
+    btn.className = "live-btn";
+    btn.textContent = channel.name;
+    btn.dataset.url = channel.url;
+
+    btn.onclick = ()=>{
+      playChannel(channel.url);
+    };
+
+    buttonsBox.appendChild(btn);
+
+  });
+
+}
+
+  
 </script>
 
 </body>
