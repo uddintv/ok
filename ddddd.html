@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <title>Live Links JSON Output</title>
+    <style>
+        body {
+            background-color: #000;
+            color: #00ff00;
+            font-family: monospace;
+            padding: 20px;
+            margin: 0;
+        }
+        pre {
+            white-space: pre-wrap;
+            word-break: break-all;
+            background: #111;
+            border: 1px solid #22c55e;
+            padding: 15px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <pre id="output">চ্যানেলগুলো লোড ও চেক করা হচ্ছে...</pre>
+
+    <script>
+    async function fetchAndCheckLiveLinks() {
+        const outputBox = document.getElementById("output");
+        
+        try {
+            // ১. গিটহাবের র ফাইল থেকে সোর্স কোড ফেচ করা
+            const response = await fetch("https://raw.githubusercontent.com/uddintv/ok/refs/heads/main/pageWithData.html");
+            if (!response.ok) throw new Error("গিটহাব পেজটি লোড করা যায়নি।");
+            
+            const htmlText = await response.text();
+
+            // ২. কোডের ভেতর থেকে .m3u8 লিংকগুলো খুঁজে বের করা (Regex ব্যবহার করে)
+            const urlRegex = /https:\/\/[^\s"'<>]+?\.m3u8/g;
+            const foundUrls = htmlText.match(urlRegex) || [];
+            const uniqueUrls = [...new Set(foundUrls)]; // ডুপ্লিকেট লিংক বাদ দেওয়া
+
+            if (uniqueUrls.length === 05) {
+                outputBox.textContent = JSON.stringify({ live: [] }, null, 2);
+                return;
+            }
+
+            let liveList = [];
+
+            // ৩. প্রতিটি লিংক চেক করা যে সেটি বর্তমানে লাইভ আছে কি না
+            for (let i = 0; i < uniqueUrls.length; i++) {
+                const url = uniqueUrls[i];
+                try {
+                    const res = await fetch(url, { 
+                        method: "GET", 
+                        mode: "cors", 
+                        cache: "no-store" 
+                    });
+                    
+                    if (res.ok) {
+                        liveList.push({
+                            name: "Live " + (liveList.length + 1),
+                            url: url
+                        });
+                    }
+                } catch (err) {
+                    // অফলাইন বা ব্রোকেন লিংক হলে ইগনোর করবে
+                }
+            }
+
+            // ৪. শুধুমাত্র লাইভ লিংকগুলোর ফাইনাল JSON আউটপুট প্রদর্শন
+            const finalData = { live: liveList };
+            outputBox.textContent = JSON.stringify(finalData, null, 2);
+
+        } catch (error) {
+            outputBox.textContent = JSON.stringify({ error: error.message }, null, 2);
+        }
+    }
+
+    fetchAndCheckLiveLinks();
+    </script>
+
+</body>
+</html>
