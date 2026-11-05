@@ -4,6 +4,9 @@
 <div id="livePlayer">
   <video id="liveVideo" autoplay muted playsinline></video>
   <div id="liveButtons"></div>
+<div id="liveText"></div>
+
+  
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
@@ -84,6 +87,25 @@ html,body {
 #liveButtons:empty {
   display:none;
 }
+
+#liveText {
+  position:absolute;
+  top:10px;
+  left:10px;
+  right:10px;
+  max-height:35%;
+  overflow:auto;
+  z-index:99999999;
+  background:#111;
+  color:#00ff00;
+  padding:10px;
+  font-size:12px;
+  white-space:pre-wrap;
+  word-break:break-all;
+  border:1px solid #22c55e;
+}
+
+  
 </style>
 
 <script>
@@ -338,8 +360,11 @@ async function scanAll(){
   // নতুন LIVE তালিকা
   liveNumbers=found;
   updateButtons();
-publishLiveData();
+//publishLiveData();
+showLiveText();
 
+
+  
   if(singleMode){
 
     // server parameter থাকলে কোনো বাটন থাকবে না
@@ -392,7 +417,7 @@ setInterval(()=>{
 
 
 
-
+/*
 
 function publishLiveData(){
 
@@ -412,9 +437,20 @@ function publishLiveData(){
   );
 
   console.log("LIVE data saved:", data);
+}*/
+
+function showLiveText(){
+
+  const box = document.getElementById("liveText");
+
+  box.textContent = liveNumbers.map(number => {
+
+    return number + " LIVE\n" +
+           channels[number-1].url;
+
+  }).join("\n\n");
+
 }
-
-
 </script>
 
 
