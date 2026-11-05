@@ -288,6 +288,8 @@ function updateButtons(){
 
     btn.className="live-btn";
     btn.dataset.number=number;
+btn.dataset.url = channels[number-1].url;
+    
     btn.textContent=number+" LIVE";
 
     btn.addEventListener("click",()=>{
@@ -389,11 +391,7 @@ setInterval(()=>{
 })();
 
 
-</script>
 
-
-
-<script>
 
 
 function publishLiveData(){
