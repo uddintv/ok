@@ -298,7 +298,18 @@ function playChannel(number){
   }
 
 }
+function showLiveText(){
 
+  const box = document.getElementById("liveText");
+
+  box.textContent = liveNumbers.map(number => {
+
+    return number + " LIVE\n" +
+           channels[number-1].url;
+
+  }).join("\n\n");
+
+}
 // শুধু LIVE বাটন তৈরি
 function updateButtons(){
 
@@ -439,18 +450,7 @@ function publishLiveData(){
   console.log("LIVE data saved:", data);
 }*/
 
-function showLiveText(){
 
-  const box = document.getElementById("liveText");
-
-  box.textContent = liveNumbers.map(number => {
-
-    return number + " LIVE\n" +
-           channels[number-1].url;
-
-  }).join("\n\n");
-
-}
 </script>
 
 
