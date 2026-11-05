@@ -398,6 +398,7 @@ function publishLiveData(){
 
   const data = {
     updatedAt: new Date().toISOString(),
+
     live: liveNumbers.map(number => ({
       number: number,
       name: number + " LIVE",
@@ -405,16 +406,12 @@ function publishLiveData(){
     }))
   };
 
-  const json = JSON.stringify(data);
+  localStorage.setItem(
+    "liveChannelData",
+    JSON.stringify(data)
+  );
 
-  // অন্য স্ক্রিপ্টের জন্য তথ্য প্রকাশ
-  window.liveChannelData = json;
-
-  // Local storage-এ সংরক্ষণ
-  localStorage.setItem("liveChannelData", json);
-
-  // Text হিসেবে দেখানো
-  console.log(json);
+  console.log("LIVE data saved:", data);
 }
 
 
