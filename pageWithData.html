@@ -373,6 +373,7 @@ async function scanAll(){
   updateButtons();
 //publishLiveData();
 showLiveText();
+generateLiveJSON();
 
 
   
@@ -450,7 +451,20 @@ function publishLiveData(){
   console.log("LIVE data saved:", data);
 }*/
 
+function generateLiveJSON(){
 
+  const data = {
+    live: liveNumbers.map(number => ({
+      name: " " + number,
+      url: channels[number-1].url
+    }))
+  };
+
+  const json = JSON.stringify(data,null,2);
+
+  document.getElementById("liveText").textContent = json;
+
+}
 </script>
 
 
