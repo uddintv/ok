@@ -4,20 +4,16 @@
         "url": "https://live2.jorvakstreamcache.com/live/channel2.m3u8"
     },
     {
+        "name": "server 4",
+        "url": "https://live2.jorvakstreamcache.com/live/channel4.m3u8"
+    },
+    {
         "name": "server 5",
         "url": "https://live2.jorvakstreamcache.com/live/channel5.m3u8"
     },
     {
-        "name": "server 6",
-        "url": "https://live2.jorvakstreamcache.com/live/channel6.m3u8"
-    },
-    {
         "name": "server 8",
         "url": "https://live2.jorvakstreamcache.com/live/channel8.m3u8"
-    },
-    {
-        "name": "server 10",
-        "url": "https://live2.jorvakstreamcache.com/live/channel10.m3u8"
     },
     {
         "name": "server 11",
@@ -36,16 +32,16 @@
         "url": "https://live2.jorvakstreamcache.com/live/channel15.m3u8"
     },
     {
+        "name": "server 16",
+        "url": "https://live2.jorvakstreamcache.com/live/channel16.m3u8"
+    },
+    {
         "name": "server 17",
         "url": "https://live2.jorvakstreamcache.com/live/channel17.m3u8"
     },
     {
         "name": "server 18",
         "url": "https://live2.jorvakstreamcache.com/live/channel18.m3u8"
-    },
-    {
-        "name": "server 20",
-        "url": "https://live2.jorvakstreamcache.com/live/channel20.m3u8"
     },
     {
         "name": "server 21",
@@ -62,9 +58,5 @@
     {
         "name": "server 28",
         "url": "https://live2.jorvakstreamcache.com/live/channel28.m3u8"
-    },
-    {
-        "name": "server 29",
-        "url": "https://live2.jorvakstreamcache.com/live/channel29.m3u8"
     }
 ]
