@@ -1,15 +1,7 @@
 [
     {
-        "name": "server 5",
-        "url": "https://live2.jorvakstreamcache.com/live/channel5.m3u8"
-    },
-    {
         "name": "server 6",
         "url": "https://live2.jorvakstreamcache.com/live/channel6.m3u8"
-    },
-    {
-        "name": "server 11",
-        "url": "https://live2.jorvakstreamcache.com/live/channel11.m3u8"
     },
     {
         "name": "server 15",
@@ -22,6 +14,10 @@
     {
         "name": "server 17",
         "url": "https://live2.jorvakstreamcache.com/live/channel17.m3u8"
+    },
+    {
+        "name": "server 18",
+        "url": "https://live2.jorvakstreamcache.com/live/channel18.m3u8"
     },
     {
         "name": "server 20",
