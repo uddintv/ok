@@ -3,7 +3,9 @@ import requests
 import json
 from concurrent.futures import ThreadPoolExecutor
 
-BASE = "https://live2.jorvakstreamcache.com/live/"
+# BASE = "https://live2.jorvakstreamcache.com/live/"
+BASE = "https://live3979.zundrixmediapipeline.com/live/"
+
 
 # মোট ৩০টি M3U8 চ্যানেল
 channels = [
@@ -11,7 +13,8 @@ channels = [
         "name": f"server {i}",
         "url": f"{BASE}channel{i}.m3u8"
     }
-    for i in range(1, 31)
+   # for i in range(1, 31)
+    for i in range(1, 51)
 ]
 
 headers = {
