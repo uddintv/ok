@@ -20,10 +20,6 @@
         "url": "https://live3979.zundrixmediapipeline.com/live/channel11.m3u8"
     },
     {
-        "name": "server 12",
-        "url": "https://live3979.zundrixmediapipeline.com/live/channel12.m3u8"
-    },
-    {
         "name": "server 13",
         "url": "https://live3979.zundrixmediapipeline.com/live/channel13.m3u8"
     },
@@ -42,6 +38,10 @@
     {
         "name": "server 20",
         "url": "https://live3979.zundrixmediapipeline.com/live/channel20.m3u8"
+    },
+    {
+        "name": "server 22",
+        "url": "https://live3979.zundrixmediapipeline.com/live/channel22.m3u8"
     },
     {
         "name": "server 23",
